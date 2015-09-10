@@ -1,0 +1,14 @@
+build/
+eclipse/
+.classpath
+.project
+.gradle/
+.settings/
+bin/
+repo/
+run/
+out/
+*.ipr
+*.iml
+*.iws
+Thumbs.db

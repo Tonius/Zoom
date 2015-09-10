@@ -1,0 +1,13 @@
+[
+	{
+	    "modid": "zoom",
+	    "name": "Zoom",
+	    "authorList": [ "tonius11" ],
+	    "description": "Adds binoculars to zoom in with",
+	    "credits": "",
+	    "version": "${version}",
+	    "mcversion": "${mcversion}",
+	    "logoFile": "",
+	    "url": ""
+	}
+]
