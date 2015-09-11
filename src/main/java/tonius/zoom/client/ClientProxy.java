@@ -10,6 +10,7 @@ public class ClientProxy extends CommonProxy {
     public void registerHandlers() {
         super.registerHandlers();
         EventHandler.init();
+        KeyHandler.init();
         MinecraftForgeClient.registerItemRenderer(Zoom.itemBinoculars, new ItemRenderer());
     }
     

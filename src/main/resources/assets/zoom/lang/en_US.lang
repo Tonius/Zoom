@@ -1,3 +1,5 @@
 item.zoom.binoculars.name=Binoculars
-item.zoom.binoculars.desc.1=Scroll while using
-item.zoom.binoculars.desc.2=to zoom in or out
+item.zoom.binoculars.desc.1=Scroll while using to zoom in or out.
+item.zoom.binoculars.desc.2=Hold %s to use from anywhere in inventory.
+
+zoom.keybind.zoom=Use Binoculars
