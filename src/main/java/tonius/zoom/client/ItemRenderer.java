@@ -8,6 +8,7 @@ import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
 
 import tonius.zoom.Zoom;
+import tonius.zoom.client.model.ModelBinoculars;
 
 public class ItemRenderer implements IItemRenderer {
     

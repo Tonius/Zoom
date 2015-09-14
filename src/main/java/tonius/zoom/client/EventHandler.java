@@ -9,6 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
 import tonius.zoom.ItemBinoculars;
 import tonius.zoom.Zoom;
@@ -32,14 +33,14 @@ public class EventHandler {
     
     @SubscribeEvent
     public void onFOVUpdate(FOVUpdateEvent evt) {
-        if (this.isUsingBinoculars() && mc.gameSettings.thirdPersonView == 0) {
+        if (isUsingBinoculars() && mc.gameSettings.thirdPersonView == 0) {
             evt.newfov = currentZoom;
         }
     }
     
     @SubscribeEvent
     public void onMouseScroll(MouseEvent evt) {
-        if (this.isUsingBinoculars() && evt.dwheel != 0 && mc.gameSettings.thirdPersonView == 0) {
+        if (isUsingBinoculars() && evt.dwheel != 0 && mc.gameSettings.thirdPersonView == 0) {
             currentZoom = 1 / Math.min(Math.max(1 / currentZoom + evt.dwheel / 180F, 1 / MIN_ZOOM), 1 / MAX_ZOOM);
             evt.setCanceled(true);
         }
@@ -47,52 +48,61 @@ public class EventHandler {
     
     @SubscribeEvent
     public void onRenderTick(RenderTickEvent evt) {
-        if (evt.phase == Phase.END) {
-            if (this.isUsingBinoculars() && mc.gameSettings.thirdPersonView == 0) {
-                mc.entityRenderer.setupOverlayRendering();
-                ScaledResolution res = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
-                double width = res.getScaledWidth_double();
-                double height = res.getScaledHeight_double();
-                
-                mc.renderEngine.bindTexture(new ResourceLocation(Zoom.MODID, "textures/gui/binoculars.png"));
-                Tessellator tessellator = Tessellator.instance;
-                tessellator.startDrawingQuads();
-                tessellator.addVertexWithUV(0.0D, height, -90.0D, 0.0D, 1.0D);
-                tessellator.addVertexWithUV(width, height, -90.0D, 1.0D, 1.0D);
-                tessellator.addVertexWithUV(width, 0.0D, -90.0D, 1.0D, 0.0D);
-                tessellator.addVertexWithUV(0.0D, 0.0D, -90.0D, 0.0D, 0.0D);
-                tessellator.draw();
-            }
+        if (evt.phase != Phase.END) {
+            return;
+        }
+        
+        if (isUsingBinoculars() && mc.gameSettings.thirdPersonView == 0) {
+            mc.entityRenderer.setupOverlayRendering();
+            ScaledResolution res = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+            double width = res.getScaledWidth_double();
+            double height = res.getScaledHeight_double();
+            
+            mc.renderEngine.bindTexture(new ResourceLocation(Zoom.MODID, "textures/gui/binoculars.png"));
+            Tessellator tessellator = Tessellator.instance;
+            tessellator.startDrawingQuads();
+            tessellator.addVertexWithUV(0.0D, height, -90.0D, 0.0D, 1.0D);
+            tessellator.addVertexWithUV(width, height, -90.0D, 1.0D, 1.0D);
+            tessellator.addVertexWithUV(width, 0.0D, -90.0D, 1.0D, 0.0D);
+            tessellator.addVertexWithUV(0.0D, 0.0D, -90.0D, 0.0D, 0.0D);
+            tessellator.draw();
         }
     }
     
     @SubscribeEvent
     public void onRenderHand(RenderHandEvent evt) {
-        if (this.isUsingBinoculars()) {
+        if (isUsingBinoculars()) {
             evt.setCanceled(true);
         }
     }
     
-    private boolean isUsingBinoculars() {
+    @SubscribeEvent
+    public void onRenderHeldItem(RenderPlayerEvent.Specials.Pre evt) {
+        if (isUsingBinoculars(evt.entityPlayer)) {
+            evt.renderItem = false;
+        }
+    }
+    
+    private static boolean isUsingBinoculars(EntityPlayer player) {
+        ItemStack stack = player.getItemInUse();
+        if (stack != null && stack.getItem() instanceof ItemBinoculars) {
+            return true;
+        } else if (KeyHandler.keyZoom.getIsKeyPressed()) {
+            for (ItemStack invStack : player.inventory.mainInventory) {
+                if (invStack != null && invStack.getItem() instanceof ItemBinoculars) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private static boolean isUsingBinoculars() {
         EntityPlayer player = mc.thePlayer;
         if (player == null) {
             return false;
         }
-        
-        if (KeyHandler.keyZoom.getIsKeyPressed()) {
-            for (ItemStack stack : player.inventory.mainInventory) {
-                if (stack != null && stack.getItem() instanceof ItemBinoculars) {
-                    return true;
-                }
-            }
-        } else {
-            ItemStack stack = player.getItemInUse();
-            if (stack != null && stack.getItem() instanceof ItemBinoculars) {
-                return true;
-            }
-        }
-        
-        return false;
+        return isUsingBinoculars(player);
     }
     
 }

@@ -15,4 +15,5 @@ public class KeyHandler {
         keyZoom = new KeyBinding(Zoom.PREFIX + "keybind.zoom", Keyboard.KEY_Z, "Zoom");
         ClientRegistry.registerKeyBinding(keyZoom);
     }
+    
 }
