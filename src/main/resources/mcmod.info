@@ -3,7 +3,7 @@
 	    "modid": "zoom",
 	    "name": "Zoom",
 	    "authorList": [ "tonius11" ],
-	    "description": "Adds binoculars to zoom in with",
+	    "description": "Adds binoculars to Minecraft",
 	    "credits": "",
 	    "version": "${version}",
 	    "mcversion": "${mcversion}",

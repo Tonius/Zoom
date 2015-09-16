@@ -12,7 +12,7 @@ import tonius.zoom.client.model.ModelBinoculars;
 
 public class ItemRenderer implements IItemRenderer {
     
-    private static Minecraft mc = Minecraft.getMinecraft();
+    private static final Minecraft mc = Minecraft.getMinecraft();
     public ModelBinoculars binoculars = new ModelBinoculars();
     
     @Override

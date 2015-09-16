@@ -14,18 +14,23 @@ import net.minecraftforge.common.MinecraftForge;
 import tonius.zoom.ItemBinoculars;
 import tonius.zoom.Zoom;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.gameevent.TickEvent.RenderTickEvent;
 
 public class EventHandler {
     
-    private static Minecraft mc = Minecraft.getMinecraft();
-    private static float currentZoom = 1 / 6.0F;
+    private static final Minecraft mc = Minecraft.getMinecraft();
     private static final float MIN_ZOOM = 1 / 1.5F;
     private static final float MAX_ZOOM = 1 / 10.0F;
     
+    private static float currentZoom = 1 / 6.0F;
+    private static boolean renderPlayerAPILoaded = false;
+    
     public static void init() {
+        renderPlayerAPILoaded = Loader.isModLoaded("RenderPlayerAPI");
+        
         EventHandler handler = new EventHandler();
         FMLCommonHandler.instance().bus().register(handler);
         MinecraftForge.EVENT_BUS.register(handler);
@@ -78,16 +83,16 @@ public class EventHandler {
     
     @SubscribeEvent
     public void onRenderHeldItem(RenderPlayerEvent.Specials.Pre evt) {
-        if (isUsingBinoculars(evt.entityPlayer)) {
+        if (renderPlayerAPILoaded && isUsingBinoculars(evt.entityPlayer, false)) {
             evt.renderItem = false;
         }
     }
     
-    private static boolean isUsingBinoculars(EntityPlayer player) {
+    private static boolean isUsingBinoculars(EntityPlayer player, boolean keybind) {
         ItemStack stack = player.getItemInUse();
         if (stack != null && stack.getItem() instanceof ItemBinoculars) {
             return true;
-        } else if (KeyHandler.keyZoom.getIsKeyPressed()) {
+        } else if (keybind && KeyHandler.keyZoom.getIsKeyPressed()) {
             for (ItemStack invStack : player.inventory.mainInventory) {
                 if (invStack != null && invStack.getItem() instanceof ItemBinoculars) {
                     return true;
@@ -97,12 +102,16 @@ public class EventHandler {
         return false;
     }
     
-    private static boolean isUsingBinoculars() {
+    private static boolean isUsingBinoculars(boolean keybind) {
         EntityPlayer player = mc.thePlayer;
         if (player == null) {
             return false;
         }
-        return isUsingBinoculars(player);
+        return isUsingBinoculars(player, keybind);
+    }
+    
+    private static boolean isUsingBinoculars() {
+        return isUsingBinoculars(true);
     }
     
 }

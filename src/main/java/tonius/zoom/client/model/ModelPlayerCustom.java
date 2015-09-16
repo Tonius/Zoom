@@ -15,7 +15,7 @@ import api.player.model.ModelPlayerBase;
 
 public class ModelPlayerCustom extends ModelPlayerBase {
     
-    private static Minecraft mc = Minecraft.getMinecraft();
+    private static final Minecraft mc = Minecraft.getMinecraft();
     
     private final ModelBinoculars modelBinoculars = new ModelBinoculars();
     
