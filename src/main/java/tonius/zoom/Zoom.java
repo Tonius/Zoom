@@ -13,12 +13,13 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = Zoom.MODID)
+@Mod(modid = Zoom.MODID, version = Zoom.VERSION)
 public class Zoom {
     
     public static final String MODID = "zoom";
     public static final String PREFIX = MODID + ".";
     public static final String RESOURCE_PREFIX = MODID + ":";
+    public static final String VERSION = "@VERSION@";
     
     @Instance(MODID)
     public static Zoom instance;
