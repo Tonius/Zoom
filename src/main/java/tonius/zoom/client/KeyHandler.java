@@ -1,11 +1,9 @@
 package tonius.zoom.client;
 
 import net.minecraft.client.settings.KeyBinding;
-
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.lwjgl.input.Keyboard;
-
 import tonius.zoom.Zoom;
-import cpw.mods.fml.client.registry.ClientRegistry;
 
 public class KeyHandler {
     

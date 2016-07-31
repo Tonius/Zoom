@@ -1,24 +1,26 @@
 package tonius.zoom.client;
 
-import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.item.Item;
+import net.minecraftforge.common.MinecraftForge;
 import tonius.zoom.CommonProxy;
 import tonius.zoom.Zoom;
-import tonius.zoom.client.model.ModelPlayerCustom;
-import api.player.model.ModelPlayerAPI;
-import cpw.mods.fml.common.Loader;
 
 public class ClientProxy extends CommonProxy {
     
     @Override
     public void registerHandlers() {
         super.registerHandlers();
-        EventHandler.init();
+        MinecraftForge.EVENT_BUS.register(new EventHandler());
         KeyHandler.init();
-        MinecraftForgeClient.registerItemRenderer(Zoom.itemBinoculars, new ItemRenderer());
-        
-        if (Loader.isModLoaded("RenderPlayerAPI")) {
-            ModelPlayerAPI.register(Zoom.MODID, ModelPlayerCustom.class);
-        }
+    }
+
+    @Override
+    public void registerItemModel(Item item, int meta, String name) {
+        RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
+        renderItem.getItemModelMesher().register(item, meta, new ModelResourceLocation(Zoom.MODID + ":" + name, "inventory"));
     }
     
 }

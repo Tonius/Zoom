@@ -2,26 +2,21 @@ package tonius.zoom.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
-import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.common.MinecraftForge;
-
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.opengl.GL11;
-
 import tonius.zoom.ItemBinoculars;
 import tonius.zoom.Zoom;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.gameevent.TickEvent.RenderTickEvent;
 
 public class EventHandler {
     
@@ -32,57 +27,51 @@ public class EventHandler {
     private static final float MAX_ZOOM = 1 / 10.0F;
     private static float currentZoom = 1 / 6.0F;
     
-    private static boolean renderPlayerAPILoaded = false;
-    
-    public static void init() {
-        renderPlayerAPILoaded = Loader.isModLoaded("RenderPlayerAPI");
-        
-        EventHandler handler = new EventHandler();
-        FMLCommonHandler.instance().bus().register(handler);
-        MinecraftForge.EVENT_BUS.register(handler);
-    }
-    
     @SubscribeEvent
     public void onFOVUpdate(FOVUpdateEvent evt) {
         if (isUsingBinoculars() && mc.gameSettings.thirdPersonView == 0) {
-            evt.newfov = currentZoom;
+            evt.setNewfov(currentZoom);
         }
     }
     
     @SubscribeEvent
     public void onMouseScroll(MouseEvent evt) {
-        if (isUsingBinoculars() && evt.dwheel != 0 && mc.gameSettings.thirdPersonView == 0) {
-            currentZoom = 1 / Math.min(Math.max(1 / currentZoom + evt.dwheel / 180F, 1 / MIN_ZOOM), 1 / MAX_ZOOM);
+        if (isUsingBinoculars() && evt.getDwheel() != 0 && mc.gameSettings.thirdPersonView == 0) {
+            currentZoom = 1 / Math.min(Math.max(1 / currentZoom + evt.getDwheel() / 180F, 1 / MIN_ZOOM), 1 / MAX_ZOOM);
             evt.setCanceled(true);
         }
     }
     
     @SubscribeEvent
-    public void onRenderTick(RenderTickEvent evt) {
-        if (evt.phase != Phase.END) {
+    public void onRenderTick(TickEvent.RenderTickEvent evt) {
+        if (evt.phase != TickEvent.Phase.END) {
             return;
         }
-        
+
+        // FIXME: screen turns black when rendering this after opening a GUI
         if (isUsingBinoculars() && mc.gameSettings.thirdPersonView == 0) {
             GL11.glPushMatrix();
+
             mc.entityRenderer.setupOverlayRendering();
-            GL11.glEnable(GL11.GL_BLEND);
-            OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GL11.glDisable(GL11.GL_ALPHA_TEST);
+            GlStateManager.disableDepth();
+            GlStateManager.depthMask(false);
+            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager.disableAlpha();
+
+            mc.getTextureManager().bindTexture(OVERLAY_TEXTURE);
             
-            mc.renderEngine.bindTexture(OVERLAY_TEXTURE);
-            
-            ScaledResolution res = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+            ScaledResolution res = new ScaledResolution(mc);
             double width = res.getScaledWidth_double();
             double height = res.getScaledHeight_double();
-            
-            Tessellator tessellator = Tessellator.instance;
-            tessellator.startDrawingQuads();
-            tessellator.addVertexWithUV(0.0D, height, -90.0D, 0.0D, 1.0D);
-            tessellator.addVertexWithUV(width, height, -90.0D, 1.0D, 1.0D);
-            tessellator.addVertexWithUV(width, 0.0D, -90.0D, 1.0D, 0.0D);
-            tessellator.addVertexWithUV(0.0D, 0.0D, -90.0D, 0.0D, 0.0D);
+
+            Tessellator tessellator = Tessellator.getInstance();
+            VertexBuffer vertexbuffer = tessellator.getBuffer();
+            vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+            vertexbuffer.pos(0.0D, (double)res.getScaledHeight(), -90.0D).tex(0.0D, 1.0D).endVertex();
+            vertexbuffer.pos((double)res.getScaledWidth(), (double)res.getScaledHeight(), -90.0D).tex(1.0D, 1.0D).endVertex();
+            vertexbuffer.pos((double)res.getScaledWidth(), 0.0D, -90.0D).tex(1.0D, 0.0D).endVertex();
+            vertexbuffer.pos(0.0D, 0.0D, -90.0D).tex(0.0D, 0.0D).endVertex();
             tessellator.draw();
             
             GL11.glPopMatrix();
@@ -96,18 +85,11 @@ public class EventHandler {
         }
     }
     
-    @SubscribeEvent
-    public void onRenderHeldItem(RenderPlayerEvent.Specials.Pre evt) {
-        if (renderPlayerAPILoaded && isUsingBinoculars(evt.entityPlayer, false)) {
-            evt.renderItem = false;
-        }
-    }
-    
     private static boolean isUsingBinoculars(EntityPlayer player, boolean keybind) {
-        ItemStack stack = player.getItemInUse();
+        ItemStack stack = player.getActiveItemStack();
         if (stack != null && stack.getItem() instanceof ItemBinoculars) {
             return true;
-        } else if (keybind && KeyHandler.keyZoom.getIsKeyPressed()) {
+        } else if (keybind && KeyHandler.keyZoom.isKeyDown()) {
             for (ItemStack invStack : player.inventory.mainInventory) {
                 if (invStack != null && invStack.getItem() instanceof ItemBinoculars) {
                     return true;
