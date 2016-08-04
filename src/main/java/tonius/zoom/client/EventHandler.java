@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.FOVUpdateEvent;
@@ -48,17 +47,16 @@ public class EventHandler {
             return;
         }
 
-        // FIXME: screen turns black when rendering this after opening a GUI
         if (isUsingBinoculars() && mc.gameSettings.thirdPersonView == 0) {
             GL11.glPushMatrix();
 
             mc.entityRenderer.setupOverlayRendering();
+            GlStateManager.enableBlend();
             GlStateManager.disableDepth();
             GlStateManager.depthMask(false);
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.disableAlpha();
-
             mc.getTextureManager().bindTexture(OVERLAY_TEXTURE);
             
             ScaledResolution res = new ScaledResolution(mc);
@@ -68,9 +66,9 @@ public class EventHandler {
             Tessellator tessellator = Tessellator.getInstance();
             VertexBuffer vertexbuffer = tessellator.getBuffer();
             vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-            vertexbuffer.pos(0.0D, (double)res.getScaledHeight(), -90.0D).tex(0.0D, 1.0D).endVertex();
-            vertexbuffer.pos((double)res.getScaledWidth(), (double)res.getScaledHeight(), -90.0D).tex(1.0D, 1.0D).endVertex();
-            vertexbuffer.pos((double)res.getScaledWidth(), 0.0D, -90.0D).tex(1.0D, 0.0D).endVertex();
+            vertexbuffer.pos(0.0D, height, -90.0D).tex(0.0D, 1.0D).endVertex();
+            vertexbuffer.pos(width, height, -90.0D).tex(1.0D, 1.0D).endVertex();
+            vertexbuffer.pos(width, 0.0D, -90.0D).tex(1.0D, 0.0D).endVertex();
             vertexbuffer.pos(0.0D, 0.0D, -90.0D).tex(0.0D, 0.0D).endVertex();
             tessellator.draw();
             
@@ -85,12 +83,16 @@ public class EventHandler {
         }
     }
     
-    private static boolean isUsingBinoculars(EntityPlayer player, boolean keybind) {
-        ItemStack stack = player.getActiveItemStack();
+    private static boolean isUsingBinoculars() {
+        if (mc.thePlayer == null) {
+            return false;
+        }
+
+        ItemStack stack = mc.thePlayer.getActiveItemStack();
         if (stack != null && stack.getItem() instanceof ItemBinoculars) {
             return true;
-        } else if (keybind && KeyHandler.keyZoom.isKeyDown()) {
-            for (ItemStack invStack : player.inventory.mainInventory) {
+        } else if (KeyHandler.keyZoom.isKeyDown()) {
+            for (ItemStack invStack : mc.thePlayer.inventory.mainInventory) {
                 if (invStack != null && invStack.getItem() instanceof ItemBinoculars) {
                     return true;
                 }
@@ -98,17 +100,5 @@ public class EventHandler {
         }
         return false;
     }
-    
-    private static boolean isUsingBinoculars(boolean keybind) {
-        EntityPlayer player = mc.thePlayer;
-        if (player == null) {
-            return false;
-        }
-        return isUsingBinoculars(player, keybind);
-    }
-    
-    private static boolean isUsingBinoculars() {
-        return isUsingBinoculars(true);
-    }
-    
+
 }
