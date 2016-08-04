@@ -92,6 +92,10 @@ public class EventHandler {
         if (stack != null && stack.getItem() instanceof ItemBinoculars) {
             return true;
         } else if (KeyHandler.keyZoom.isKeyDown()) {
+            if (mc.thePlayer.getHeldItemOffhand() != null && mc.thePlayer.getHeldItemOffhand().getItem() instanceof ItemBinoculars) {
+                return true;
+            }
+
             for (ItemStack invStack : mc.thePlayer.inventory.mainInventory) {
                 if (invStack != null && invStack.getItem() instanceof ItemBinoculars) {
                     return true;
