@@ -9,12 +9,13 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = Zoom.MODID, version = Zoom.VERSION)
+@Mod(modid = Zoom.MODID, version = Zoom.VERSION,
+        acceptedMinecraftVersions = "[1.10]",
+        dependencies = "required-after:Forge@[12.18.0.1999,);")
 public class Zoom {
     
     public static final String MODID = "zoom";
     public static final String PREFIX = MODID + ".";
-    public static final String RESOURCE_PREFIX = MODID + ":";
     public static final String VERSION = "@VERSION@";
     
     @Mod.Instance(MODID)
