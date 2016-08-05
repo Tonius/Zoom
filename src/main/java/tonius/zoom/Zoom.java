@@ -1,27 +1,24 @@
 package tonius.zoom;
 
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-
 import org.apache.logging.log4j.Logger;
 
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.registry.GameRegistry;
-
-@Mod(modid = Zoom.MODID, version = Zoom.VERSION)
+@Mod(modid = Zoom.MODID, version = Zoom.VERSION,
+        acceptedMinecraftVersions = "[1.10]",
+        dependencies = "required-after:Forge@[12.18.0.1999,);")
 public class Zoom {
     
     public static final String MODID = "zoom";
     public static final String PREFIX = MODID + ".";
-    public static final String RESOURCE_PREFIX = MODID + ":";
     public static final String VERSION = "@VERSION@";
     
-    @Instance(MODID)
+    @Mod.Instance(MODID)
     public static Zoom instance;
     @SidedProxy(clientSide = "tonius.zoom.client.ClientProxy", serverSide = "tonius.zoom.CommonProxy")
     public static CommonProxy proxy;
@@ -29,7 +26,7 @@ public class Zoom {
     
     public static ItemBinoculars itemBinoculars;
     
-    @EventHandler
+    @Mod.EventHandler
     public static void preInit(FMLPreInitializationEvent evt) {
         logger = evt.getModLog();
         logger.info("Starting Zoom");
@@ -38,15 +35,25 @@ public class Zoom {
         itemBinoculars = new ItemBinoculars();
     }
     
-    @EventHandler
+    @Mod.EventHandler
     public static void init(FMLInitializationEvent evt) {
         proxy.registerHandlers();
+
+        proxy.registerItemModel(itemBinoculars, 0, ItemBinoculars.NAME);
     }
     
-    @EventHandler
+    @Mod.EventHandler
     public static void postInit(FMLPostInitializationEvent evt) {
         logger.info("Registering recipes");
-        GameRegistry.addRecipe(new ShapedOreRecipe(itemBinoculars, new Object[] { "B B", "LEL", "P P", 'B', "blockGlassColorless", 'L', "ingotIron", 'E', "stickWood", 'P', "paneGlassColorless" }));
+        GameRegistry.addRecipe(new ShapedOreRecipe(itemBinoculars,
+                "B B",
+                "LEL",
+                "P P",
+                'B', "blockGlassColorless",
+                'L', "ingotIron",
+                'E', "stickWood",
+                'P', "paneGlassColorless"
+        ));
     }
     
 }

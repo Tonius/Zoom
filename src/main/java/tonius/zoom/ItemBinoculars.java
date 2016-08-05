@@ -1,35 +1,40 @@
 package tonius.zoom;
 
-import java.util.List;
-
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import tonius.zoom.client.KeyHandler;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+
+import java.util.List;
 
 public class ItemBinoculars extends Item {
+
+    public static final String NAME = "binoculars";
     
     public ItemBinoculars() {
         this.setMaxStackSize(1);
-        this.setUnlocalizedName(Zoom.PREFIX + "binoculars");
-        this.setTextureName(Zoom.RESOURCE_PREFIX + "binoculars");
-        this.setCreativeTab(CreativeTabs.tabTools);
-        
-        GameRegistry.registerItem(this, "binoculars");
+        this.setUnlocalizedName(Zoom.PREFIX + NAME);
+        this.setCreativeTab(CreativeTabs.TOOLS);
+
+        this.setRegistryName(NAME);
+        GameRegistry.register(this);
     }
-    
+
     @Override
-    public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player) {
-        player.setItemInUse(itemStack, this.getMaxItemUseDuration(itemStack));
-        return itemStack;
+    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStack, World world, EntityPlayer player, EnumHand hand) {
+        player.setActiveHand(hand);
+        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStack);
     }
     
     @Override
@@ -39,10 +44,10 @@ public class ItemBinoculars extends Item {
     
     @Override
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack itemStack, EntityPlayer player, List list, boolean bool) {
-        list.add(StatCollector.translateToLocal("item.zoom.binoculars.desc.1"));
+    public void addInformation(ItemStack itemStack, EntityPlayer player, List<String> list, boolean bool) {
+        list.add(I18n.format("item.zoom.binoculars.desc.1"));
         if (KeyHandler.keyZoom.getKeyCode() != 0) {
-            list.add(StatCollector.translateToLocalFormatted("item.zoom.binoculars.desc.2", EnumChatFormatting.AQUA + GameSettings.getKeyDisplayString(KeyHandler.keyZoom.getKeyCode()) + EnumChatFormatting.GRAY));
+            list.add(I18n.format("item.zoom.binoculars.desc.2", TextFormatting.AQUA + GameSettings.getKeyDisplayString(KeyHandler.keyZoom.getKeyCode()) + TextFormatting.GRAY));
         }
     }
 }
