@@ -84,19 +84,19 @@ public class EventHandler {
     }
     
     private static boolean isUsingBinoculars() {
-        if (mc.thePlayer == null) {
+        if (mc.player == null) {
             return false;
         }
 
-        ItemStack stack = mc.thePlayer.getActiveItemStack();
+        ItemStack stack = mc.player.getActiveItemStack();
         if (stack != null && stack.getItem() instanceof ItemBinoculars) {
             return true;
         } else if (KeyHandler.keyZoom.isKeyDown()) {
-            if (mc.thePlayer.getHeldItemOffhand() != null && mc.thePlayer.getHeldItemOffhand().getItem() instanceof ItemBinoculars) {
+            if (mc.player.getHeldItemOffhand() != null && mc.player.getHeldItemOffhand().getItem() instanceof ItemBinoculars) {
                 return true;
             }
 
-            for (ItemStack invStack : mc.thePlayer.inventory.mainInventory) {
+            for (ItemStack invStack : mc.player.inventory.mainInventory) {
                 if (invStack != null && invStack.getItem() instanceof ItemBinoculars) {
                     return true;
                 }
