@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -64,7 +64,7 @@ public class EventHandler {
             double height = res.getScaledHeight_double();
 
             Tessellator tessellator = Tessellator.getInstance();
-            VertexBuffer vertexbuffer = tessellator.getBuffer();
+            BufferBuilder vertexbuffer = tessellator.getBuffer();
             vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
             vertexbuffer.pos(0.0D, height, -90.0D).tex(0.0D, 1.0D).endVertex();
             vertexbuffer.pos(width, height, -90.0D).tex(1.0D, 1.0D).endVertex();
@@ -84,19 +84,19 @@ public class EventHandler {
     }
     
     private static boolean isUsingBinoculars() {
-        if (mc.thePlayer == null) {
+        if (mc.player == null) {
             return false;
         }
 
-        ItemStack stack = mc.thePlayer.getActiveItemStack();
+        ItemStack stack = mc.player.getActiveItemStack();
         if (stack != null && stack.getItem() instanceof ItemBinoculars) {
             return true;
         } else if (KeyHandler.keyZoom.isKeyDown()) {
-            if (mc.thePlayer.getHeldItemOffhand() != null && mc.thePlayer.getHeldItemOffhand().getItem() instanceof ItemBinoculars) {
+            if (mc.player.getHeldItemOffhand() != null && mc.player.getHeldItemOffhand().getItem() instanceof ItemBinoculars) {
                 return true;
             }
 
-            for (ItemStack invStack : mc.thePlayer.inventory.mainInventory) {
+            for (ItemStack invStack : mc.player.inventory.mainInventory) {
                 if (invStack != null && invStack.getItem() instanceof ItemBinoculars) {
                     return true;
                 }
