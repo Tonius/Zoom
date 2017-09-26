@@ -2,6 +2,7 @@ package tonius.zoom;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -11,11 +12,11 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import tonius.zoom.client.KeyHandler;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemBinoculars extends Item {
@@ -32,9 +33,9 @@ public class ItemBinoculars extends Item {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStack, World world, EntityPlayer player, EnumHand hand) {
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
         player.setActiveHand(hand);
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStack);
+        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
     }
     
     @Override
@@ -44,7 +45,7 @@ public class ItemBinoculars extends Item {
     
     @Override
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack itemStack, EntityPlayer player, List<String> list, boolean bool) {
+    public void addInformation(ItemStack itemStack, @Nullable World world, List<String> list, ITooltipFlag bool) {
         list.add(I18n.format("item.zoom.binoculars.desc.1"));
         if (KeyHandler.keyZoom.getKeyCode() != 0) {
             list.add(I18n.format("item.zoom.binoculars.desc.2", TextFormatting.AQUA + GameSettings.getKeyDisplayString(KeyHandler.keyZoom.getKeyCode()) + TextFormatting.GRAY));
