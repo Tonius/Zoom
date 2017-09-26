@@ -29,7 +29,6 @@ public class ItemBinoculars extends Item {
         this.setCreativeTab(CreativeTabs.TOOLS);
 
         this.setRegistryName(NAME);
-        GameRegistry.register(this);
     }
 
     @Override

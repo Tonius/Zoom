@@ -1,17 +1,20 @@
 package tonius.zoom;
 
+import net.minecraft.item.Item;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Zoom.MODID, version = Zoom.VERSION,
-        acceptedMinecraftVersions = "[1.10]",
-        dependencies = "required-after:Forge@[12.18.0.1999,);")
+        acceptedMinecraftVersions = "[1.12]")
+@Mod.EventBusSubscriber(modid = Zoom.MODID)
 public class Zoom {
     
     public static final String MODID = "zoom";
@@ -30,11 +33,16 @@ public class Zoom {
     public static void preInit(FMLPreInitializationEvent evt) {
         logger = evt.getModLog();
         logger.info("Starting Zoom");
-        
-        logger.info("Registering items");
+
         itemBinoculars = new ItemBinoculars();
     }
-    
+
+    @SubscribeEvent
+    public static void registerItems(RegistryEvent.Register<Item> event) {
+        logger.info("Registering items");
+        event.getRegistry().registerAll(itemBinoculars);
+    }
+
     @Mod.EventHandler
     public static void init(FMLInitializationEvent evt) {
         proxy.registerHandlers();
