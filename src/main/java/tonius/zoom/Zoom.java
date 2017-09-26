@@ -48,18 +48,4 @@ public class Zoom {
         proxy.registerItemModel(itemBinoculars, 0, ItemBinoculars.NAME);
     }
     
-    @Mod.EventHandler
-    public static void postInit(FMLPostInitializationEvent evt) {
-        logger.info("Registering recipes");
-        GameRegistry.addRecipe(new ShapedOreRecipe(itemBinoculars,
-                "B B",
-                "LEL",
-                "P P",
-                'B', "blockGlassColorless",
-                'L', "ingotIron",
-                'E', "stickWood",
-                'P', "paneGlassColorless"
-        ));
-    }
-    
 }

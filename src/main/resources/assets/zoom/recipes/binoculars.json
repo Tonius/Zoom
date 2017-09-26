@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "B B",
+        "LEL",
+        "P P"
+    ],
+    "key": {
+        "B": {
+            "item": "minecraft:glass"
+        },
+        "L": {
+            "item": "minecraft:iron_ingot"
+        },
+        "E": {
+            "type": "forge:ore_dict",
+            "ore": "stickWood"
+        },
+        "P": {
+            "item": "minecraft:glass_pane"
+        }
+    },
+    "result": {
+        "item": "zoom:binoculars"
+    }
+}
