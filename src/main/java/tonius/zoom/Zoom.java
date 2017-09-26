@@ -33,7 +33,7 @@ public class Zoom {
     public static void preInit(FMLPreInitializationEvent evt) {
         logger = evt.getModLog();
         logger.info("Starting Zoom");
-
+        proxy.registerHandlers();
         itemBinoculars = new ItemBinoculars();
     }
 
@@ -45,8 +45,6 @@ public class Zoom {
 
     @Mod.EventHandler
     public static void init(FMLInitializationEvent evt) {
-        proxy.registerHandlers();
-
         proxy.registerItemModel(itemBinoculars, 0, ItemBinoculars.NAME);
     }
     
